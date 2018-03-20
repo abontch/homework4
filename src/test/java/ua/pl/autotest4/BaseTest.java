@@ -6,8 +6,11 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.ie.InternetExplorerDriver;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
+import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Optional;
+import org.testng.annotations.Parameters;
 import ua.pl.autotest4.utils.logging.EventHandler;
 
 import java.net.URISyntaxException;
@@ -27,6 +30,7 @@ public abstract class BaseTest {
      *
      * @return New instance of {@link WebDriver} object.
      */
+
     private WebDriver getDriver(String browser) {
         switch (browser) {
             case "firefox":
@@ -70,8 +74,9 @@ public abstract class BaseTest {
      *
      */
     @BeforeClass
+    @Parameters("browser")
     // TODO use parameters from pom.xml to pass required browser type
-    public void setUp(String browser ) {
+    public void setUp(@Optional("chrome") String browser ) {
         driver = new EventFiringWebDriver(getDriver(browser));
         driver.register(new EventHandler());
 
@@ -80,12 +85,13 @@ public abstract class BaseTest {
         driver.manage().window().maximize();
 
         actions = new GeneralActions(driver);
+        Reporter.setEscapeHtml(false);
     }
 
     /**
      * Closes driver instance after test class execution.
      */
-    @AfterClass
+  @AfterClass
     public void tearDown() {
         if (driver != null) {
             driver.quit();
